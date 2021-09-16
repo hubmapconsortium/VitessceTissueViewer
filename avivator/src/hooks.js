@@ -44,49 +44,34 @@ export const useImage = (source, history) => {
       );
 
       if (nextLoader) {
-        const newSelections = buildDefaultSelection(nextLoader[0]);
-        const { Channels } = nextMeta.Pixels;
-        const channelOptions = Channels.map((c, i) => c.Name ?? `Channel ${i}`);
+        const newSelections = [{ z: 1 }];
+        const { Channels = [0] } = nextMeta.Pixels || {};
+        const channelOptions = Channels.map((c, i) => c.Name ?? 'Channel ' + i);
         // Default RGB.
-        let newSliders = [];
-        let newDomains = [];
-        let newColors = [];
-        const isRgb = guessRgb(nextMeta);
-        if (isRgb) {
-          if (isInterleaved(nextLoader[0].shape)) {
-            // These don't matter because the data is interleaved.
-            newSliders = [[0, 255]];
-            newDomains = [[0, 255]];
-            newColors = [[255, 0, 0]];
-          } else {
-            newSliders = [
-              [0, 255],
-              [0, 255],
-              [0, 255]
-            ];
-            newDomains = [
-              [0, 255],
-              [0, 255],
-              [0, 255]
-            ];
-            newColors = [
-              [255, 0, 0],
-              [0, 255, 0],
-              [0, 0, 255]
-            ];
-          }
-          if (isLensOn) {
-            toggleIsLensOn();
-          }
-          setViewerState({ useColormap: false, useLens: false });
-        } else {
-          const stats = await getMultiSelectionStats({
-            loader: nextLoader,
-            selections: newSelections,
-            use3d
-          });
-          newDomains = stats.domains;
-          newSliders = stats.sliders;
+        let newSliders = [
+          [0, 255],
+          [0, 255],
+          [0, 255]
+        ];
+        let newDomains = [
+          [0, 255],
+          [0, 255],
+          [0, 255]
+        ];
+        let newColors = [
+          [255, 0, 0],
+          [0, 255, 0],
+          [0, 0, 255]
+        ];
+        const isRgb = false;
+        if (!isRgb) {
+          // const stats = await getMultiSelectionStats({
+          //   loader: nextLoader,
+          //   selections: newSelections,
+          //   use3d
+          // });
+          newDomains = [[0, 1000]];
+          newSliders = [[0, 250]];
           // If there is only one channel, use white.
           newColors =
             newDomains.length === 1

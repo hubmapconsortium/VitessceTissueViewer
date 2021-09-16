@@ -129,8 +129,8 @@ function VolumeButton() {
               ({ domains, sliders }) => {
                 range(selections.length).forEach((channel, j) =>
                   setPropertiesForChannel(channel, {
-                    domains: domains[j],
-                    sliders: sliders[j]
+                    domains: [0, 2000],
+                    sliders: [0, 250]
                   })
                 );
                 setViewerState({
@@ -194,8 +194,8 @@ function VolumeButton() {
                                   range(selections.length).forEach(
                                     (channel, j) =>
                                       setPropertiesForChannel(channel, {
-                                        domains: domains[j],
-                                        sliders: sliders[j]
+                                        domains: [0, 2000],
+                                        sliders: [0, 250]
                                       })
                                   );
                                   setImageSetting({ onViewportLoad: () => {} });

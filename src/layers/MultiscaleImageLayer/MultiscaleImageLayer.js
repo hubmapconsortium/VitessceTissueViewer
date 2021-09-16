@@ -97,7 +97,6 @@ const MultiscaleImageLayer = class extends CompositeLayer {
       excludeBackground,
       refinementStrategy
     } = this.props;
-
     // Get properties from highest resolution
     const { tileSize, dtype } = loader[0];
 
@@ -120,7 +119,8 @@ const MultiscaleImageLayer = class extends CompositeLayer {
       // going on with our pyramids and/or rendering that is different.
       const resolution = Math.round(-z);
       const getTile = selection => {
-        const config = { x, y, selection, signal };
+        const reDoneSelection = { z: selection.z >> (loader.length - z) }
+        const config = { x, y, selection: reDoneSelection, signal };
         return loader[resolution].getTile(config);
       };
 

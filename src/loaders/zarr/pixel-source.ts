@@ -55,7 +55,7 @@ class ZarrPixelSource<S extends string[]> implements PixelSource<S> {
   }
 
   get shape() {
-    return this._data.shape;
+    return [this._data.shape[1], this._data.shape[2], this._data.shape[0]];
   }
 
   get dtype() {
@@ -105,26 +105,22 @@ class ZarrPixelSource<S extends string[]> implements PixelSource<S> {
   }
 
   async getRaster({ selection }: RasterSelection<S> | { selection: number[] }) {
-    const sel = this._chunkIndex(selection, null, null);
+    let sel = this._chunkIndex(selection, null, null);
+    sel = [sel[1], sel[2], sel[0]];
     const { data, shape } = (await this._data.getRaw(sel)) as RawArray;
     const [height, width] = shape;
     return { data, width, height } as PixelData;
   }
 
   async getTile(props: TileSelection<S> | ZarrTileSelection) {
+    // console.log(props);
     const { x, y, selection, signal } = props;
 
     let res;
-    if (this._readChunks) {
-      // Can read chunks directly by key since tile size matches chunk shape
-      const sel = this._chunkIndex(selection, x, y);
-      res = await this._data.getRawChunk(sel, { storeOptions: { signal } });
-    } else {
-      // Need to use zarr fancy indexing to get desired tile size.
-      const [xSlice, ySlice] = this._getSlices(x, y);
-      const sel = this._chunkIndex(selection, xSlice, ySlice);
-      res = await this._data.getRaw(sel);
-    }
+    const [xSlice, ySlice] = this._getSlices(x, y);
+    let sel = this._chunkIndex(selection, xSlice, ySlice);
+    sel = [sel[1], sel[2], sel[0]]
+    res = await this._data.getRaw(sel);
 
     const {
       data,
